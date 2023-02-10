@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-schedule",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "Create Scheduled Tasks for Koishi",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -28,9 +28,10 @@
     "schedule"
   ],
   "koishi": {
+    "portable": true,
     "description": {
       "en": "Create scheduled tasks",
-      "zh": "定时执行指令"
+      "zh": "创建计划任务，定时执行指令"
     },
     "service": {
       "required": [
