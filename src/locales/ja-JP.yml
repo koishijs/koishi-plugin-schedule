@@ -6,31 +6,31 @@ general:
     - 水曜日
     - 木曜日
     - 金曜日
-    - 六
-  everyday: 每天 {0}
-  everyweek: 每周{0} {1}
-  interval: 每隔 <i18n:time value={0}/> (剩余 <i18n:time value={1}/>)
+    - 土曜日
+  everyday: 毎日 {0}
+  everyweek: 毎週{0} {1}
+  interval: <i18n:time value={0}/> ごとに (残り <i18n:time value={1}/>)
 commands:
   schedule:
-    description: 设置定时命令
+    description: コマンドをスケジュールする
     options:
-      rest: 要执行的指令
-      interval: 设置触发的间隔秒数
-      list: 查看已经设置的日程
-      ensure: 错过时间也确保执行
-      full: 查找全部上下文
-      delete: 删除已经设置的日程
+      rest: 実行するコマンドを指定
+      interval: 繰り返す間隔の秒数を指定する
+      list: 設定されたスケジュールを表示する
+      ensure: 設定された時間を過ぎても実行を保証する
+      full: すべてのコンテキストから検索する
+      delete: 設定されたスケジュールを削除する
     messages:
-      context: '，上下文：{0}'
-      context.private: 私聊 {userId}
-      context.guild: 频道 {channelId}
-      delete-success: 日程 {0} 已删除。
-      create-success: 日程已创建，编号为 {0}。
-      list-empty: 当前没有等待执行的日程。
-      command-expected: 请输入要执行的指令。
-      date-invalid: 请输入合法的日期。
-      date-invalid-suggestion: 请输入合法的日期。你要输入的是不是 {0}s？
-      date-expected: 请输入执行时间。
-      date-past: 不能指定过去的时间为执行时间。
-      interval-invalid: 请输入合法的时间间隔。
-      interval-too-short: 时间间隔过短。
+      context: '、コンテキスト：{0}'
+      context.private: ダイレクトメッセージ {userId}
+      context.guild: チャンネル {channelId}
+      delete-success: スケジュール {0} は削除されました。
+      create-success: スケジュールが作成され、番号は {0} です。
+      list-empty: 実行待ちのスケジュールはありません。
+      command-expected: 実行するコマンドを入力してください。
+      date-invalid: 有効な日付を入力してください。
+      date-invalid-suggestion: 有効な日付を入力してください。入力したいのは {0}s ですか？
+      date-expected: 実行時間を入力してください。
+      date-past: 過去の時間を実行時間として指定することはできません。
+      interval-invalid: 有効な時間間隔を入力してください。
+      interval-too-short: 時間間隔は短すぎます。
