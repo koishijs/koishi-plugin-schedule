@@ -12,12 +12,12 @@ general:
   interval: 每隔 <i18n:time value={0}/> (剩余 <i18n:time value={1}/>)
 commands:
   schedule:
-    description: 设置定时命令
+    description: 設置定時命令
     options:
-      rest: 要执行的指令
-      interval: 设置触发的间隔秒数
-      list: 查看已经设置的日程
-      ensure: 错过时间也确保执行
+      rest: 要執行的指令
+      interval: 設置觸發的間隔秒數
+      list: 查看已經設置的日程
+      ensure: 錯過時間也確保執行
       full: 查找全部上下文
       delete: 删除已经设置的日程
     messages:
