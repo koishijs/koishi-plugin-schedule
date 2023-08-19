@@ -21,6 +21,9 @@ commands:
       ensure: 错过时间也确保执行
       full: 查找全部上下文
       delete: 删除已经设置的日程
+    shortcuts:
+      lsschedule: 列出定时任务
+      delschedule: 删除定时任务
     messages:
       context: ，上下文：{0}
       context.private: 私聊 {userId}

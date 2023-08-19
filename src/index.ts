@@ -135,6 +135,8 @@ export function apply(ctx: Context, config: Config) {
   })
 
   ctx.command('schedule [time]', { authority: config.authorityBasic, checkUnknown: true })
+    .shortcut('lsschedule', { options: { list: true } })
+    .shortcut('delschedule', { options: { delete: true } })
     .option('rest', '-- <command:text>')
     .option('interval', '/ <interval:string>', { authority: config.authorityInterval })
     .option('list', '-l')
