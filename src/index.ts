@@ -134,12 +134,12 @@ export function apply(ctx: Context, config: Config) {
     })
   })
 
-  ctx.command('schedule [time]', { authority: 3, checkUnknown: true })
+  ctx.command('schedule [time]', { authority: config.authorityBasic, checkUnknown: true })
     .option('rest', '-- <command:text>')
-    .option('interval', '/ <interval:string>', { authority: 4 })
+    .option('interval', '/ <interval:string>', { authority: config.authorityInterval })
     .option('list', '-l')
     .option('ensure', '-e')
-    .option('full', '-f', { authority: 4 })
+    .option('full', '-f', { authority: config.authorityFull })
     .option('delete', '-d <id>')
     .action(async ({ session, options }, ...dateSegments) => {
       if (options.delete) {
