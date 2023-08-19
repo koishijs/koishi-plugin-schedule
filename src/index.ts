@@ -1,4 +1,5 @@
-import { Context, Dict, Logger, Schema, Session, Time } from 'koishi'
+import { Context, Dict, Logger, Session, Time } from 'koishi'
+import { Config } from './config'
 
 declare module 'koishi' {
   interface Tables {
@@ -6,6 +7,7 @@ declare module 'koishi' {
   }
 }
 
+export * from './config'
 export interface Schedule {
   id: number
   assignee: string
@@ -21,19 +23,11 @@ const logger = new Logger('schedule')
 export const name = 'schedule'
 export const using = ['database'] as const
 
-export interface Config {
-  minInterval?: number
-}
-
-export const Config: Schema<Config> = Schema.object({
-  minInterval: Schema.natural().role('ms').description('允许的最小时间间隔。').default(Time.minute),
-})
-
 function toHourMinute(time: Date) {
   return `${Time.toDigits(time.getHours())}:${Time.toDigits(time.getMinutes())}`
 }
 
-export function apply(ctx: Context, { minInterval }: Config) {
+export function apply(ctx: Context, config: Config) {
   ctx.i18n.define('zh', require('./locales/zh-CN'))
 
   function formatInterval(date: Date, interval: number, session: Session) {
@@ -162,9 +156,11 @@ export function apply(ctx: Context, { minInterval }: Config) {
         return schedules.map(({ id, time, interval, command, session: payload }) => {
           let output = `${id}. ${formatInterval(time, interval, session)}：${command}`
           if (options.full) {
-            output += session.text('.context', [payload.subtype === 'private'
-              ? session.text('.context.private', payload)
-              : session.text('.context.guild', payload)])
+            output += session.text('.context', [
+              payload.subtype === 'private'
+                ? session.text('.context.private', payload)
+                : session.text('.context.guild', payload),
+            ])
           }
           return output
         }).join('\n')
@@ -192,7 +188,7 @@ export function apply(ctx: Context, { minInterval }: Config) {
       const interval = Time.parseTime(options.interval)
       if (!interval && options.interval) {
         return session.text('.interval-invalid')
-      } else if (interval && interval < minInterval) {
+      } else if (interval && interval < config.minInterval) {
         return session.text('.interval-too-short')
       }
 
