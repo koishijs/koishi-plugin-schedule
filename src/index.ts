@@ -157,7 +157,7 @@ export function apply(ctx: Context, config: Config) {
           let output = `${id}. ${formatInterval(time, interval, session)}：${command}`
           if (options.full) {
             output += session.text('.context', [
-              payload.subtype === 'private'
+              payload.isDirect
                 ? session.text('.context.private', payload)
                 : session.text('.context.guild', payload),
             ])
