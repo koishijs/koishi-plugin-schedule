@@ -170,6 +170,15 @@ export function apply(ctx: Context, config: Config) {
 
       if (!options.rest) return session.text('.command-expected')
 
+      const cmdStr = options.rest.split(' ')[0]
+      const cmd = ctx.$commander.get(cmdStr)
+      if (!cmd) {
+        return session.text('.command-invalid')
+      }
+      if (cmd.config.authority > session.user.authority) {
+        return session.text('internal.low-authority')
+      }
+
       const dateString = dateSegments.join('-')
       const time = Time.parseDate(dateString)
       const timestamp = +time
