@@ -1,5 +1,6 @@
 import { Context, Dict, Logger, Session, Time } from 'koishi'
 import { Config } from './config'
+import { checkAuth } from './utils'
 
 declare module 'koishi' {
   interface Tables {
@@ -170,14 +171,8 @@ export function apply(ctx: Context, config: Config) {
 
       if (!options.rest) return session.text('.command-expected')
 
-      const cmdStr = options.rest.split(' ')[0]
-      const cmd = ctx.$commander.get(cmdStr)
-      if (!cmd) {
-        return session.text('.command-invalid')
-      }
-      if (cmd.config.authority > session.user.authority) {
-        return session.text('internal.low-authority')
-      }
+      const authCheckRes = await checkAuth(ctx, options.rest, session)
+      if (authCheckRes) return authCheckRes
 
       const dateString = dateSegments.join('-')
       const time = Time.parseDate(dateString)
