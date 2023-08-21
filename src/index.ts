@@ -133,9 +133,13 @@ export function apply(ctx: Context, config: Config) {
         prepareSchedule(schedule, new Session(bot, schedule.session))
       })
     })
+
+    Object.entries(config.customShotrtcut).forEach(([short, command]) => {
+      cmd.shortcut(short, { args: [command] })
+    })
   })
 
-  ctx.command('schedule [time]', { authority: config.authorityBasic, checkUnknown: true })
+  const cmd = ctx.command('schedule [time]', { authority: config.authorityBasic, checkUnknown: true })
     .shortcut('lsschedule', { options: { list: true } })
     .shortcut('delschedule', { options: { delete: true } })
     .option('rest', '-- <command:text>')
