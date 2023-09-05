@@ -1,4 +1,6 @@
-import { Context, Dict, Logger, Schema, Session, Time } from 'koishi'
+import { Context, Dict, Logger, Session, Time } from 'koishi'
+import { Config } from './config'
+import { checkAuth } from './utils'
 
 declare module 'koishi' {
   interface Tables {
@@ -6,6 +8,7 @@ declare module 'koishi' {
   }
 }
 
+export * from './config'
 export interface Schedule {
   id: number
   assignee: string
@@ -21,19 +24,11 @@ const logger = new Logger('schedule')
 export const name = 'schedule'
 export const using = ['database'] as const
 
-export interface Config {
-  minInterval?: number
-}
-
-export const Config: Schema<Config> = Schema.object({
-  minInterval: Schema.natural().role('ms').description('允许的最小时间间隔。').default(Time.minute),
-})
-
 function toHourMinute(time: Date) {
   return `${Time.toDigits(time.getHours())}:${Time.toDigits(time.getMinutes())}`
 }
 
-export function apply(ctx: Context, { minInterval }: Config) {
+export function apply(ctx: Context, config: Config) {
   ctx.i18n.define('zh', require('./locales/zh-CN'))
 
   function formatInterval(date: Date, interval: number, session: Session) {
@@ -138,14 +133,20 @@ export function apply(ctx: Context, { minInterval }: Config) {
         prepareSchedule(schedule, new Session(bot, schedule.session))
       })
     })
+
+    Object.entries(config.customShotrtcut).forEach(([short, command]) => {
+      cmd.shortcut(short, { args: [command] })
+    })
   })
 
-  ctx.command('schedule [time]', { authority: 3, checkUnknown: true })
+  const cmd = ctx.command('schedule [time]', { authority: config.authorityBasic, checkUnknown: true })
+    .shortcut('lsschedule', { options: { list: true } })
+    .shortcut('delschedule', { options: { delete: true } })
     .option('rest', '-- <command:text>')
-    .option('interval', '/ <interval:string>', { authority: 4 })
+    .option('interval', '/ <interval:string>', { authority: config.authorityInterval })
     .option('list', '-l')
     .option('ensure', '-e')
-    .option('full', '-f', { authority: 4 })
+    .option('full', '-f', { authority: config.authorityFull })
     .option('delete', '-d <id>')
     .action(async ({ session, options }, ...dateSegments) => {
       if (options.delete) {
@@ -162,15 +163,20 @@ export function apply(ctx: Context, { minInterval }: Config) {
         return schedules.map(({ id, time, interval, command, session: payload }) => {
           let output = `${id}. ${formatInterval(time, interval, session)}：${command}`
           if (options.full) {
-            output += session.text('.context', [payload.subtype === 'private'
-              ? session.text('.context.private', payload)
-              : session.text('.context.guild', payload)])
+            output += session.text('.context', [
+              payload.isDirect
+                ? session.text('.context.private', payload)
+                : session.text('.context.guild', payload),
+            ])
           }
           return output
         }).join('\n')
       }
 
       if (!options.rest) return session.text('.command-expected')
+
+      const authCheckRes = await checkAuth(ctx, options.rest, session)
+      if (authCheckRes) return authCheckRes
 
       const dateString = dateSegments.join('-')
       const time = Time.parseDate(dateString)
@@ -192,7 +198,7 @@ export function apply(ctx: Context, { minInterval }: Config) {
       const interval = Time.parseTime(options.interval)
       if (!interval && options.interval) {
         return session.text('.interval-invalid')
-      } else if (interval && interval < minInterval) {
+      } else if (interval && interval < config.minInterval) {
         return session.text('.interval-too-short')
       }
 
